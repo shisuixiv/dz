@@ -1,0 +1,98 @@
+  <!DOCTYPE html>
+  <html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ productsdadw.title }} | Geeks Shop</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 40px;
+        background-color: #f9f9f9;
+      }
+
+      .productsdadw-wrapper {
+        max-width: 900px;
+        margin: auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-image {
+        flex: 1 1 350px;
+        max-width: 400px;
+        height: auto;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+      }
+
+      .product-info {
+        flex: 1 1 400px;
+      }
+
+      .product-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+
+      .product-price {
+        font-size: 22px;
+        color: #28a745;
+        margin-bottom: 20px;
+      }
+
+      .product-description {
+        font-size: 16px;
+        color: #333;
+        line-height: 1.6;
+        margin-bottom: 25px;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        text-decoration: none;
+        color: #007bff;
+        font-size: 15px;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      .buy-button {
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 16px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: background-color 0.2s ease;
+      }
+
+      .buy-button:hover {
+        background-color: #0056b3;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="product-wrapper">
+      <img class="product-image" src="{{ product.image.url }}" alt="{{ product.title }}">
+      <div class="product-info">
+        <div class="product-title">{{ product.title }}</div>
+        <div class="product-price">{{ product.price }} сом</div>
+        <div class="product-description">{{ product.description }}</div>
+        <a href="{% url 'add_to_cart' product.id %}" class="buy-button">добавить в корзину</a><br>
+        <a href="/" class="back-link">← Назад к каталогу</a>
+      </div>
+    </div>
+  </body>
+  </html>

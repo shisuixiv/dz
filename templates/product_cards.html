@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  {% for product in products %}
+  <div class="product-card">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.title }}" class="product-image">
+    {% endif %}
+    <div class="product-details">
+      <div class="product-title">{{ product.title }}</div>
+      <div class="product-price">{{ product.price }} сом</div>
+      <div class="product-description">{{ product.description|truncatewords:15 }}</div>
+
+      <div class="product-buttons">
+        {% if product.info %}
+          <a href="{{ product.info }}" target="_blank" class="product-button">Сайт товара</a>
+        {% endif %}
+        <a href="{% url 'product_detail' product.id %}" class="product-button">Подробнее</a>
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <p>Товары не найдены</p>
+{% endfor %}
+
+
+  
+
+</body>
+</html>

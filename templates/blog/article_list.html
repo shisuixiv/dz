@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Список статей</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: #fefefe;
+            color: #333;
+            line-height: 1.5;
+        }
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #1d6fa5;
+            text-decoration: underline;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            background: #f4f7fb;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li:last-child {
+            margin-bottom: 0;
+        }
+        li a {
+            flex-grow: 1;
+        }
+        li span {
+            color: #777;
+            font-size: 0.9rem;
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+        .create-link {
+            display: inline-block;
+            margin-bottom: 25px;
+            padding: 10px 18px;
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .create-link:hover {
+            background-color: #1d6fa5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список статей</h1>
+    <a class="create-link" href="{% url 'article_create' %}">Создать новую</a>
+    <ul>
+    {% for article in articles %}
+        <li>
+            <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+            <span>{{ article.created_at|date:"d.m.Y H:i" }}</span>
+        </li>
+    {% empty %}
+        <li>Статей нет</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

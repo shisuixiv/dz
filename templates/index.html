@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Geeks Shop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .exchange-rate {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+      border-radius: 10px;
+
+    }
+
+    input[type="text"], input[type="number"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+    input[type="text"] {
+      width: 300px;
+      border-radius: 10px;
+      
+    }
+    input[type="number"] {
+      width: 140px;
+      border-radius: 10px;
+      margin-right: 10px;
+    }
+
+    .product-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .product-card {
+      width: 250px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px); 
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .product-details {
+      padding: 15px;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .product-price {
+      color: #28a745;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .product-description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .product-button {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 8px 12px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    }
+
+    .product-button:hover {
+      background-color: #0056b3;
+    }
+    
+    .filter-button{
+      display: inline-block;
+      background-color: white;
+      color: black;
+      padding: 8px 12px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: transform 0.5s ease, background-color 0.2s ease, color 0.2s ease;
+    }
+    .filter-button:hover {
+      background-color: black;
+      color:white;
+      transform: translateY(-5px);
+    }
+    
+    
+  </style>
+</head>
+
+<body>
+  <h1>🛒 Каталог товаров Geeks</h1>
+
+  <div id="exchange-rate" class="exchange-rate">
+    Загрузка курса валют...
+  </div>
+
+  <input type="text" id="search-input" name="q" placeholder="Поиск товара по названию...">
+
+  <!-- Фильтр по цене -->
+  <form id="filter-form" method="get">
+    <input type="number" name="price_gte" placeholder="Цена от">
+    <input type="number" name="price_lte" placeholder="Цена до">
+    <button type="submit" class="filter-button">Применить фильтр</button>
+  </form>
+
+  <div class="container">
+    <div id="product-list" class="product-container">
+      {% for product in products %}
+        <div class="product-card">
+          <img class="product-image" src="{{ product.image.url }}" alt="{{ product.title }}">
+          <div class="product-details">
+            <div class="product-title">{{ product.title }}</div>
+            <div class="product-price">
+              {{ product.price }} ₽ ({{ product.price_eur }} € / {{ product.price_usd }} $)
+            </div>
+            <div class="product-description">{{ product.description|truncatewords:15 }}</div>
+            <a href="{% url 'product_detail' product.id %}" class="product-button">Подробнее</a>
+            {% if product.info %}
+  <a href="{{ product.info }}" target="_blank" class="product-button">Перейти</a>
+{% else %}
+  <a href="{% url 'product_detail' product.id %}" class="product-button">Подробнее</a>
+{% endif %}
+
+          </div>
+        </div>
+      {% empty %}
+        <p>Товары не найдены.</p>
+      {% endfor %}
+    </div>
+  </div>
+  
+
+  <script>
+    async function loadExchangeRates() {
+      const container = document.getElementById('exchange-rate');
+      try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/RUB');
+        if (!response.ok) throw new Error('Сервер вернул ошибку');
+
+        const data = await response.json();
+        // Обратный курс — сколько рублей за 1 USD и EUR
+        const usdToRub = 1 / data.rates.USD;
+        const eurToRub = 1 / data.rates.EUR;
+
+        container.textContent = `💱 Курс валют: USD: ${usdToRub.toFixed(2)} ₽, EUR: ${eurToRub.toFixed(2)} ₽`;
+      } catch (error) {
+        console.error('Ошибка загрузки курса валют:', error);
+        container.textContent = 'Ошибка загрузки курса валют.';
+      }
+    }
+
+    loadExchangeRates();
+
+    const input = document.getElementById('search-input');
+    const productList = document.getElementById('product-list');
+    const filterForm = document.getElementById('filter-form');
+
+    function updateProducts() {
+      const formData = new FormData(filterForm);
+      const params = new URLSearchParams(formData);
+      params.append('q', input.value);
+
+      fetch(`/live_search/?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+          productList.innerHTML = data.html;
+        });
+    }
+
+    input.addEventListener('input', updateProducts);
+    filterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      updateProducts();
+    });
+  </script>   
+
+</body>
+</html>
